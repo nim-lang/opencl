@@ -26,15 +26,13 @@
 
 
 {.deadCodeElim: on.}
-when defined(windows): 
-  const 
-    openclDll* = "opencl.dll"
-elif defined(macosx): 
-  const 
-    openclDll* = "libopencl.dylib"
-else: 
-  const 
-    openclDll* = "libOpenCL.so"
+when defined(windows):
+  {.pragma: climport, stdcall, dynlib: "opencl.dll".}
+elif defined(macosx):
+  {.pragma: climport, stdcall.}
+  {.passL: "-framework OpenCL".}
+else:
+  {.pragma: climport, stdcall, dynlib: "libOpenCL.so".}
 type 
   T_cl_platform_id = object
   T_cl_device_id = object
@@ -674,31 +672,31 @@ type
 # Platform API 
 
 proc getPlatformIDs*(num_entries: uint32; platforms: ptr Pplatform_id; 
-                     num_platforms: ptr uint32): TClResult {.stdcall, 
-    importc: "clGetPlatformIDs", dynlib: openclDll.}
+                     num_platforms: ptr uint32): TClResult {.
+    importc: "clGetPlatformIDs", climport.}
 proc getPlatformInfo*(platform: Pplatform_id; param_name: Tplatform_info; 
                       param_value_size: int; param_value: pointer; 
-                      param_value_size_ret: ptr int): TClResult {.stdcall, 
-    importc: "clGetPlatformInfo", dynlib: openclDll.}
+                      param_value_size_ret: ptr int): TClResult {.
+    importc: "clGetPlatformInfo", climport.}
 # Device APIs 
 
 proc getDeviceIDs*(platform: Pplatform_id; device_type: Tdevice_type; 
                    num_entries: uint32; devices: ptr Pdevice_id; 
-                   num_devices: ptr uint32): TClResult {.stdcall, 
-    importc: "clGetDeviceIDs", dynlib: openclDll.}
+                   num_devices: ptr uint32): TClResult {.
+    importc: "clGetDeviceIDs", climport.}
 proc getDeviceInfo*(device: Pdevice_id; param_name: Tdevice_info; 
                     param_value_size: int; param_value: pointer; 
-                    param_value_size_ret: ptr int): TClResult {.stdcall, 
-    importc: "clGetDeviceInfo", dynlib: openclDll.}
+                    param_value_size_ret: ptr int): TClResult {.
+    importc: "clGetDeviceInfo", climport.}
 proc createSubDevices*(in_device: Pdevice_id; 
                        properties: ptr Tdevice_partition_property; 
                        num_devices: uint32; out_devices: ptr Pdevice_id; 
-                       num_devices_ret: ptr uint32): TClResult {.stdcall, 
-    importc: "clCreateSubDevices", dynlib: openclDll.}
-proc retainDevice*(device: Pdevice_id): TClResult {.stdcall, 
-    importc: "clRetainDevice", dynlib: openclDll.}
-proc releaseDevice*(device: Pdevice_id): TClResult {.stdcall, 
-    importc: "clReleaseDevice", dynlib: openclDll.}
+                       num_devices_ret: ptr uint32): TClResult {.
+    importc: "clCreateSubDevices", climport.}
+proc retainDevice*(device: Pdevice_id): TClResult {.
+    importc: "clRetainDevice", climport.}
+proc releaseDevice*(device: Pdevice_id): TClResult {.
+    importc: "clReleaseDevice", climport.}
 # Context APIs  
 
 type 
@@ -708,207 +706,207 @@ type
 proc createContext*(properties: ptr Tcontext_properties; num_devices: uint32; 
                     devices: ptr Pdevice_id; pfn_notify: TCreateContextCb; 
                     user_data: pointer; errcode_ret: ptr TClResult): Pcontext {.
-    stdcall, importc: "clCreateContext", dynlib: openclDll.}
+    importc: "clCreateContext", climport.}
 proc createContextFromType*(properties: ptr Tcontext_properties; 
                             device_type: Tdevice_type; 
                             pfn_notify: TCreateContextCb; user_data: pointer; 
-                            errcode_ret: ptr TClResult): Pcontext {.stdcall, 
-    importc: "clCreateContextFromType", dynlib: openclDll.}
-proc retainContext*(context: Pcontext): TClResult {.stdcall, 
-    importc: "clRetainContext", dynlib: openclDll.}
-proc releaseContext*(context: Pcontext): TClResult {.stdcall, 
-    importc: "clReleaseContext", dynlib: openclDll.}
+                            errcode_ret: ptr TClResult): Pcontext {.
+    importc: "clCreateContextFromType", climport.}
+proc retainContext*(context: Pcontext): TClResult {.
+    importc: "clRetainContext", climport.}
+proc releaseContext*(context: Pcontext): TClResult {.
+    importc: "clReleaseContext", climport.}
 proc getContextInfo*(context: Pcontext; param_name: Tcontext_info; 
                      param_value_size: int; param_value: pointer; 
-                     param_value_size_ret: ptr int): TClResult {.stdcall, 
-    importc: "clGetContextInfo", dynlib: openclDll.}
+                     param_value_size_ret: ptr int): TClResult {.
+    importc: "clGetContextInfo", climport.}
 # Command Queue APIs 
 
 proc createCommandQueue*(context: Pcontext; device: Pdevice_id; 
                          properties: Tcommand_queue_properties; 
-                         errcode_ret: ptr TClResult): Pcommand_queue {.stdcall, 
-    importc: "clCreateCommandQueue", dynlib: openclDll.}
-proc retainCommandQueue*(command_queue: Pcommand_queue): TClResult {.stdcall, 
-    importc: "clRetainCommandQueue", dynlib: openclDll.}
-proc releaseCommandQueue*(command_queue: Pcommand_queue): TClResult {.stdcall, 
-    importc: "clReleaseCommandQueue", dynlib: openclDll.}
+                         errcode_ret: ptr TClResult): Pcommand_queue {.
+    importc: "clCreateCommandQueue", climport.}
+proc retainCommandQueue*(command_queue: Pcommand_queue): TClResult {.
+    importc: "clRetainCommandQueue", climport.}
+proc releaseCommandQueue*(command_queue: Pcommand_queue): TClResult {.
+    importc: "clReleaseCommandQueue", climport.}
 proc getCommandQueueInfo*(command_queue: Pcommand_queue; 
                           param_name: Tcommand_queue_info; 
                           param_value_size: int; param_value: pointer; 
-                          param_value_size_ret: ptr int): TClResult {.stdcall, 
-    importc: "clGetCommandQueueInfo", dynlib: openclDll.}
+                          param_value_size_ret: ptr int): TClResult {.
+    importc: "clGetCommandQueueInfo", climport.}
 # Memory Object APIs 
 
 proc createBuffer*(context: Pcontext; flags: Tmem_flags; size: int; 
-                   host_ptr: pointer; errcode_ret: ptr TClResult): Pmem {.stdcall, 
-    importc: "clCreateBuffer", dynlib: openclDll.}
+                   host_ptr: pointer; errcode_ret: ptr TClResult): Pmem {.
+    importc: "clCreateBuffer", climport.}
 proc createSubBuffer*(buffer: Pmem; flags: Tmem_flags; 
                       buffer_create_type: Tbuffer_create_type; 
                       buffer_create_info: pointer; errcode_ret: ptr TClResult): Pmem {.
-    stdcall, importc: "clCreateSubBuffer", dynlib: openclDll.}
+    importc: "clCreateSubBuffer", climport.}
 proc createImage*(context: Pcontext; flags: Tmem_flags; 
                   image_format: ptr Timage_format; image_desc: ptr Timage_desc; 
-                  host_ptr: pointer; errcode_ret: ptr TClResult): Pmem {.stdcall, 
-    importc: "clCreateImage", dynlib: openclDll.}
-proc retainMemObject*(memobj: Pmem): TClResult {.stdcall, 
-    importc: "clRetainMemObject", dynlib: openclDll.}
-proc releaseMemObject*(memobj: Pmem): TClResult {.stdcall, 
-    importc: "clReleaseMemObject", dynlib: openclDll.}
+                  host_ptr: pointer; errcode_ret: ptr TClResult): Pmem {.
+    importc: "clCreateImage", climport.}
+proc retainMemObject*(memobj: Pmem): TClResult {.
+    importc: "clRetainMemObject", climport.}
+proc releaseMemObject*(memobj: Pmem): TClResult {.
+    importc: "clReleaseMemObject", climport.}
 proc getSupportedImageFormats*(context: Pcontext; flags: Tmem_flags; 
                                image_type: Tmem_object_type; 
                                num_entries: uint32; 
                                image_formats: ptr Timage_format; 
-                               num_image_formats: ptr uint32): TClResult {.stdcall, 
-    importc: "clGetSupportedImageFormats", dynlib: openclDll.}
+                               num_image_formats: ptr uint32): TClResult {.
+    importc: "clGetSupportedImageFormats", climport.}
 proc getMemObjectInfo*(memobj: Pmem; param_name: Tmem_info; 
                        param_value_size: int; param_value: pointer; 
-                       param_value_size_ret: ptr int): TClResult {.stdcall, 
-    importc: "clGetMemObjectInfo", dynlib: openclDll.}
+                       param_value_size_ret: ptr int): TClResult {.
+    importc: "clGetMemObjectInfo", climport.}
 proc getImageInfo*(image: Pmem; param_name: Timage_info; param_value_size: int; 
                    param_value: pointer; param_value_size_ret: ptr int): TClResult {.
-    stdcall, importc: "clGetImageInfo", dynlib: openclDll.}
+    importc: "clGetImageInfo", climport.}
 type 
   TMemObjectDestructorCb* = proc (memobj: Pmem; user_data: pointer) {.stdcall.}
 
 proc setMemObjectDestructorCallback*(memobj: Pmem; 
                                      pfn_notify: TMemObjectDestructorCb; 
-                                     user_data: pointer): TClResult {.stdcall, 
-    importc: "clSetMemObjectDestructorCallback", dynlib: openclDll.}
+                                     user_data: pointer): TClResult {.
+    importc: "clSetMemObjectDestructorCallback", climport.}
 # Sampler APIs 
 
 proc createSampler*(context: Pcontext; normalized_coords: Tbool; 
                     addressing_mode: Taddressing_mode; 
                     filter_mode: Tfilter_mode; errcode_ret: ptr TClResult): Psampler {.
-    stdcall, importc: "clCreateSampler", dynlib: openclDll.}
-proc retainSampler*(sampler: Psampler): TClResult {.stdcall, 
-    importc: "clRetainSampler", dynlib: openclDll.}
-proc releaseSampler*(sampler: Psampler): TClResult {.stdcall, 
-    importc: "clReleaseSampler", dynlib: openclDll.}
+    importc: "clCreateSampler", climport.}
+proc retainSampler*(sampler: Psampler): TClResult {.
+    importc: "clRetainSampler", climport.}
+proc releaseSampler*(sampler: Psampler): TClResult {.
+    importc: "clReleaseSampler", climport.}
 proc getSamplerInfo*(sampler: Psampler; param_name: Tsampler_info; 
                      param_value_size: int; param_value: pointer; 
-                     param_value_size_ret: ptr int): TClResult {.stdcall, 
-    importc: "clGetSamplerInfo", dynlib: openclDll.}
+                     param_value_size_ret: ptr int): TClResult {.
+    importc: "clGetSamplerInfo", climport.}
 # Program Object APIs  
 
 proc createProgramWithSource*(context: Pcontext; count: uint32; 
                               strings: cstringArray; lengths: ptr int; 
-                              errcode_ret: ptr TClResult): Pprogram {.stdcall, 
-    importc: "clCreateProgramWithSource", dynlib: openclDll.}
+                              errcode_ret: ptr TClResult): Pprogram {.
+    importc: "clCreateProgramWithSource", climport.}
 proc createProgramWithBinary*(context: Pcontext; num_devices: uint32; 
                               device_list: ptr Pdevice_id; lengths: ptr int; 
                               binaries: ptr ptr cuchar; 
                               binary_status: ptr int32; errcode_ret: ptr TClResult): Pprogram {.
-    stdcall, importc: "clCreateProgramWithBinary", dynlib: openclDll.}
+    importc: "clCreateProgramWithBinary", climport.}
 proc createProgramWithBuiltInKernels*(context: Pcontext; num_devices: uint32; 
                                       device_list: ptr Pdevice_id; 
                                       kernel_names: cstring; 
                                       errcode_ret: ptr TClResult): Pprogram {.
-    stdcall, importc: "clCreateProgramWithBuiltInKernels", dynlib: openclDll.}
-proc retainProgram*(program: Pprogram): TClResult {.stdcall, 
-    importc: "clRetainProgram", dynlib: openclDll.}
-proc releaseProgram*(program: Pprogram): TClResult {.stdcall, 
-    importc: "clReleaseProgram", dynlib: openclDll.}
+    importc: "clCreateProgramWithBuiltInKernels", climport.}
+proc retainProgram*(program: Pprogram): TClResult {.
+    importc: "clRetainProgram", climport.}
+proc releaseProgram*(program: Pprogram): TClResult {.
+    importc: "clReleaseProgram", climport.}
 
 type 
   TProgramCb* = proc (program: Pprogram; user_data: pointer) {.stdcall.}
 
 proc buildProgram*(program: Pprogram; num_devices: uint32; 
                    device_list: ptr Pdevice_id; options: cstring; 
-                   pfn_notify: TProgramCb; user_data: pointer): TClResult {.stdcall, 
-    importc: "clBuildProgram", dynlib: openclDll.}
+                   pfn_notify: TProgramCb; user_data: pointer): TClResult {.
+    importc: "clBuildProgram", climport.}
 proc compileProgram*(program: Pprogram; num_devices: uint32; 
                      device_list: ptr Pdevice_id; options: cstring; 
                      num_input_headers: uint32; input_headers: ptr Pprogram; 
                      header_include_names: cstringArray; pfn_notify: TProgramCb; 
-                     user_data: pointer): TClResult {.stdcall, 
-    importc: "clCompileProgram", dynlib: openclDll.}
+                     user_data: pointer): TClResult {.
+    importc: "clCompileProgram", climport.}
 proc linkProgram*(context: Pcontext; num_devices: uint32; 
                   device_list: ptr Pdevice_id; options: cstring; 
                   num_input_programs: uint32; input_programs: ptr Pprogram; 
                   pfn_notify: TProgramCb; user_data: pointer; 
-                  errcode_ret: ptr TClResult): Pprogram {.stdcall, 
-    importc: "clLinkProgram", dynlib: openclDll.}
-proc unloadPlatformCompiler*(platform: Pplatform_id): TClResult {.stdcall, 
-    importc: "clUnloadPlatformCompiler", dynlib: openclDll.}
+                  errcode_ret: ptr TClResult): Pprogram {.
+    importc: "clLinkProgram", climport.}
+proc unloadPlatformCompiler*(platform: Pplatform_id): TClResult {.
+    importc: "clUnloadPlatformCompiler", climport.}
 proc getProgramInfo*(program: Pprogram; param_name: Tprogram_info; 
                      param_value_size: int; param_value: pointer; 
-                     param_value_size_ret: ptr int): TClResult {.stdcall, 
-    importc: "clGetProgramInfo", dynlib: openclDll.}
+                     param_value_size_ret: ptr int): TClResult {.
+    importc: "clGetProgramInfo", climport.}
 proc getProgramBuildInfo*(program: Pprogram; device: Pdevice_id; 
                           param_name: Tprogram_build_info; 
                           param_value_size: int; param_value: pointer; 
-                          param_value_size_ret: ptr int): TClResult {.stdcall, 
-    importc: "clGetProgramBuildInfo", dynlib: openclDll.}
+                          param_value_size_ret: ptr int): TClResult {.
+    importc: "clGetProgramBuildInfo", climport.}
 # Kernel Object APIs 
 
 proc createKernel*(program: Pprogram; kernel_name: cstring; 
-                   errcode_ret: ptr TClResult): Pkernel {.stdcall, 
-    importc: "clCreateKernel", dynlib: openclDll.}
+                   errcode_ret: ptr TClResult): Pkernel {.
+    importc: "clCreateKernel", climport.}
 proc createKernelsInProgram*(program: Pprogram; num_kernels: uint32; 
                              kernels: ptr Pkernel; num_kernels_ret: ptr uint32): TClResult {.
-    stdcall, importc: "clCreateKernelsInProgram", dynlib: openclDll.}
-proc retainKernel*(kernel: Pkernel): TClResult {.stdcall, importc: "clRetainKernel", 
-    dynlib: openclDll.}
-proc releaseKernel*(kernel: Pkernel): TClResult {.stdcall, 
-    importc: "clReleaseKernel", dynlib: openclDll.}
+    importc: "clCreateKernelsInProgram", climport.}
+proc retainKernel*(kernel: Pkernel): TClResult {.importc: "clRetainKernel", 
+    climport.}
+proc releaseKernel*(kernel: Pkernel): TClResult {.
+    importc: "clReleaseKernel", climport.}
 proc setKernelArg*(kernel: Pkernel; arg_index: uint32; arg_size: int; 
-                   arg_value: pointer): TClResult {.stdcall, 
-    importc: "clSetKernelArg", dynlib: openclDll.}
+                   arg_value: pointer): TClResult {.
+    importc: "clSetKernelArg", climport.}
 proc getKernelInfo*(kernel: Pkernel; param_name: Tkernel_info; 
                     param_value_size: int; param_value: pointer; 
-                    param_value_size_ret: ptr int): TClResult {.stdcall, 
-    importc: "clGetKernelInfo", dynlib: openclDll.}
+                    param_value_size_ret: ptr int): TClResult {.
+    importc: "clGetKernelInfo", climport.}
 proc getKernelArgInfo*(kernel: Pkernel; arg_indx: uint32; 
                        param_name: Tkernel_arg_info; param_value_size: int; 
                        param_value: pointer; param_value_size_ret: ptr int): TClResult {.
-    stdcall, importc: "clGetKernelArgInfo", dynlib: openclDll.}
+    importc: "clGetKernelArgInfo", climport.}
 proc getKernelWorkGroupInfo*(kernel: Pkernel; device: Pdevice_id; 
                              param_name: Tkernel_work_group_info; 
                              param_value_size: int; param_value: pointer; 
-                             param_value_size_ret: ptr int): TClResult {.stdcall, 
-    importc: "clGetKernelWorkGroupInfo", dynlib: openclDll.}
+                             param_value_size_ret: ptr int): TClResult {.
+    importc: "clGetKernelWorkGroupInfo", climport.}
 # Event Object APIs 
 
 proc waitForEvents*(num_events: uint32; event_list: ptr Pevent): TClResult {.
-    stdcall, importc: "clWaitForEvents", dynlib: openclDll.}
+    importc: "clWaitForEvents", climport.}
 proc getEventInfo*(event: Pevent; param_name: Tevent_info; 
                    param_value_size: int; param_value: pointer; 
-                   param_value_size_ret: ptr int): TClResult {.stdcall, 
-    importc: "clGetEventInfo", dynlib: openclDll.}
+                   param_value_size_ret: ptr int): TClResult {.
+    importc: "clGetEventInfo", climport.}
 proc createUserEvent*(context: Pcontext; errcode_ret: ptr TClResult): Pevent {.
-    stdcall, importc: "clCreateUserEvent", dynlib: openclDll.}
-proc retainEvent*(event: Pevent): TClResult {.stdcall, importc: "clRetainEvent", 
-    dynlib: openclDll.}
-proc releaseEvent*(event: Pevent): TClResult {.stdcall, importc: "clReleaseEvent", 
-    dynlib: openclDll.}
+    importc: "clCreateUserEvent", climport.}
+proc retainEvent*(event: Pevent): TClResult {.importc: "clRetainEvent", 
+    climport.}
+proc releaseEvent*(event: Pevent): TClResult {.importc: "clReleaseEvent", 
+    climport.}
 proc setUserEventStatus*(event: Pevent; execution_status: int32): TClResult {.
-    stdcall, importc: "clSetUserEventStatus", dynlib: openclDll.}
+    importc: "clSetUserEventStatus", climport.}
 
 type 
   TEventCb* = proc (a2: Pevent; a3: int32; a4: pointer) {.stdcall.}
 
 proc setEventCallback*(event: Pevent; command_exec_callback_type: int32; 
                        pfn_notify: TEventCb; user_data: pointer): TClResult {.
-    stdcall, importc: "clSetEventCallback", dynlib: openclDll.}
+    importc: "clSetEventCallback", climport.}
 # Profiling APIs 
 
 proc getEventProfilingInfo*(event: Pevent; param_name: Tprofiling_info; 
                             param_value_size: int; param_value: pointer; 
-                            param_value_size_ret: ptr int): TClResult {.stdcall, 
-    importc: "clGetEventProfilingInfo", dynlib: openclDll.}
+                            param_value_size_ret: ptr int): TClResult {.
+    importc: "clGetEventProfilingInfo", climport.}
 # Flush and Finish APIs 
 
-proc flush*(command_queue: Pcommand_queue): TClResult {.stdcall, importc: "clFlush", 
-    dynlib: openclDll.}
-proc finish*(command_queue: Pcommand_queue): TClResult {.stdcall, 
-    importc: "clFinish", dynlib: openclDll.}
+proc flush*(command_queue: Pcommand_queue): TClResult {.importc: "clFlush", 
+    climport.}
+proc finish*(command_queue: Pcommand_queue): TClResult {.
+    importc: "clFinish", climport.}
 # Enqueued Commands APIs 
 
 proc enqueueReadBuffer*(command_queue: Pcommand_queue; buffer: Pmem; 
                         blocking_read: Tbool; offset: int; size: int; 
                         theptr: pointer; num_events_in_wait_list: uint32; 
                         event_wait_list: ptr Pevent; event: ptr Pevent): TClResult {.
-    stdcall, importc: "clEnqueueReadBuffer", dynlib: openclDll.}
+    importc: "clEnqueueReadBuffer", climport.}
 proc enqueueReadBufferRect*(command_queue: Pcommand_queue; buffer: Pmem; 
                             blocking_read: Tbool; buffer_offset: ptr int; 
                             host_offset: ptr int; region: ptr int; 
@@ -916,12 +914,12 @@ proc enqueueReadBufferRect*(command_queue: Pcommand_queue; buffer: Pmem;
                             host_row_pitch: int; host_slice_pitch: int; 
                             theptr: pointer; num_events_in_wait_list: uint32; 
                             event_wait_list: ptr Pevent; event: ptr Pevent): TClResult {.
-    stdcall, importc: "clEnqueueReadBufferRect", dynlib: openclDll.}
+    importc: "clEnqueueReadBufferRect", climport.}
 proc enqueueWriteBuffer*(command_queue: Pcommand_queue; buffer: Pmem; 
                          blocking_write: Tbool; offset: int; size: int; 
                          theptr: pointer; num_events_in_wait_list: uint32; 
                          event_wait_list: ptr Pevent; event: ptr Pevent): TClResult {.
-    stdcall, importc: "clEnqueueWriteBuffer", dynlib: openclDll.}
+    importc: "clEnqueueWriteBuffer", climport.}
 proc enqueueWriteBufferRect*(command_queue: Pcommand_queue; buffer: Pmem; 
                              blocking_write: Tbool; buffer_offset: ptr int; 
                              host_offset: ptr int; region: ptr int; 
@@ -929,17 +927,17 @@ proc enqueueWriteBufferRect*(command_queue: Pcommand_queue; buffer: Pmem;
                              host_row_pitch: int; host_slice_pitch: int; 
                              theptr: pointer; num_events_in_wait_list: uint32; 
                              event_wait_list: ptr Pevent; event: ptr Pevent): TClResult {.
-    stdcall, importc: "clEnqueueWriteBufferRect", dynlib: openclDll.}
+    importc: "clEnqueueWriteBufferRect", climport.}
 proc enqueueFillBuffer*(command_queue: Pcommand_queue; buffer: Pmem; 
                         pattern: pointer; pattern_size: int; offset: int; 
                         size: int; num_events_in_wait_list: uint32; 
                         event_wait_list: ptr Pevent; event: ptr Pevent): TClResult {.
-    stdcall, importc: "clEnqueueFillBuffer", dynlib: openclDll.}
+    importc: "clEnqueueFillBuffer", climport.}
 proc enqueueCopyBuffer*(command_queue: Pcommand_queue; src_buffer: Pmem; 
                         dst_buffer: Pmem; src_offset: int; dst_offset: int; 
                         size: int; num_events_in_wait_list: uint32; 
                         event_wait_list: ptr Pevent; event: ptr Pevent): TClResult {.
-    stdcall, importc: "clEnqueueCopyBuffer", dynlib: openclDll.}
+    importc: "clEnqueueCopyBuffer", climport.}
 proc enqueueCopyBufferRect*(command_queue: Pcommand_queue; src_buffer: Pmem; 
                             dst_buffer: Pmem; src_origin: ptr int; 
                             dst_origin: ptr int; region: ptr int; 
@@ -947,81 +945,81 @@ proc enqueueCopyBufferRect*(command_queue: Pcommand_queue; src_buffer: Pmem;
                             dst_row_pitch: int; dst_slice_pitch: int; 
                             num_events_in_wait_list: uint32; 
                             event_wait_list: ptr Pevent; event: ptr Pevent): TClResult {.
-    stdcall, importc: "clEnqueueCopyBufferRect", dynlib: openclDll.}
+    importc: "clEnqueueCopyBufferRect", climport.}
 proc enqueueReadImage*(command_queue: Pcommand_queue; image: Pmem; 
                        blocking_read: Tbool; origin: array[3, ptr int]; 
                        region: array[3, ptr int]; row_pitch: int; 
                        slice_pitch: int; theptr: pointer; 
                        num_events_in_wait_list: uint32; 
                        event_wait_list: ptr Pevent; event: ptr Pevent): TClResult {.
-    stdcall, importc: "clEnqueueReadImage", dynlib: openclDll.}
+    importc: "clEnqueueReadImage", climport.}
 proc enqueueWriteImage*(command_queue: Pcommand_queue; image: Pmem; 
                         blocking_write: Tbool; origin: array[3, ptr int]; 
                         region: array[3, ptr int]; input_row_pitch: int; 
                         input_slice_pitch: int; theptr: pointer; 
                         num_events_in_wait_list: uint32; 
                         event_wait_list: ptr Pevent; event: ptr Pevent): TClResult {.
-    stdcall, importc: "clEnqueueWriteImage", dynlib: openclDll.}
+    importc: "clEnqueueWriteImage", climport.}
 proc enqueueFillImage*(command_queue: Pcommand_queue; image: Pmem; 
                        fill_color: pointer; origin: array[3, ptr int]; 
                        region: array[3, ptr int]; 
                        num_events_in_wait_list: uint32; 
                        event_wait_list: ptr Pevent; event: ptr Pevent): TClResult {.
-    stdcall, importc: "clEnqueueFillImage", dynlib: openclDll.}
+    importc: "clEnqueueFillImage", climport.}
 proc enqueueCopyImage*(command_queue: Pcommand_queue; src_image: Pmem; 
                        dst_image: Pmem; src_origin: array[3, ptr int]; 
                        dst_origin: array[3, ptr int]; region: array[3, ptr int]; 
                        num_events_in_wait_list: uint32; 
                        event_wait_list: ptr Pevent; event: ptr Pevent): TClResult {.
-    stdcall, importc: "clEnqueueCopyImage", dynlib: openclDll.}
+    importc: "clEnqueueCopyImage", climport.}
 proc enqueueCopyImageToBuffer*(command_queue: Pcommand_queue; src_image: Pmem; 
                                dst_buffer: Pmem; src_origin: array[3, ptr int]; 
                                region: array[3, ptr int]; dst_offset: int; 
                                num_events_in_wait_list: uint32; 
                                event_wait_list: ptr Pevent; event: ptr Pevent): TClResult {.
-    stdcall, importc: "clEnqueueCopyImageToBuffer", dynlib: openclDll.}
+    importc: "clEnqueueCopyImageToBuffer", climport.}
 proc enqueueCopyBufferToImage*(command_queue: Pcommand_queue; src_buffer: Pmem; 
                                dst_image: Pmem; src_offset: int; 
                                dst_origin: array[3, ptr int]; 
                                region: array[3, ptr int]; 
                                num_events_in_wait_list: uint32; 
                                event_wait_list: ptr Pevent; event: ptr Pevent): TClResult {.
-    stdcall, importc: "clEnqueueCopyBufferToImage", dynlib: openclDll.}
+    importc: "clEnqueueCopyBufferToImage", climport.}
 proc enqueueMapBuffer*(command_queue: Pcommand_queue; buffer: Pmem; 
                        blocking_map: Tbool; map_flags: Tmap_flags; offset: int; 
                        size: int; num_events_in_wait_list: uint32; 
                        event_wait_list: ptr Pevent; event: ptr Pevent; 
-                       errcode_ret: ptr TClResult): pointer {.stdcall, 
-    importc: "clEnqueueMapBuffer", dynlib: openclDll.}
+                       errcode_ret: ptr TClResult): pointer {.
+    importc: "clEnqueueMapBuffer", climport.}
 proc enqueueMapImage*(command_queue: Pcommand_queue; image: Pmem; 
                       blocking_map: Tbool; map_flags: Tmap_flags; 
                       origin: array[3, ptr int]; region: array[3, ptr int]; 
                       image_row_pitch: ptr int; image_slice_pitch: ptr int; 
                       num_events_in_wait_list: uint32; 
                       event_wait_list: ptr Pevent; event: ptr Pevent; 
-                      errcode_ret: ptr TClResult): pointer {.stdcall, 
-    importc: "clEnqueueMapImage", dynlib: openclDll.}
+                      errcode_ret: ptr TClResult): pointer {.
+    importc: "clEnqueueMapImage", climport.}
 proc enqueueUnmapMemObject*(command_queue: Pcommand_queue; memobj: Pmem; 
                             mapped_ptr: pointer; 
                             num_events_in_wait_list: uint32; 
                             event_wait_list: ptr Pevent; event: ptr Pevent): TClResult {.
-    stdcall, importc: "clEnqueueUnmapMemObject", dynlib: openclDll.}
+    importc: "clEnqueueUnmapMemObject", climport.}
 proc enqueueMigrateMemObjects*(command_queue: Pcommand_queue; 
                                num_mem_objects: uint32; mem_objects: ptr Pmem; 
                                flags: Tmem_migration_flags; 
                                num_events_in_wait_list: uint32; 
                                event_wait_list: ptr Pevent; event: ptr Pevent): TClResult {.
-    stdcall, importc: "clEnqueueMigrateMemObjects", dynlib: openclDll.}
+    importc: "clEnqueueMigrateMemObjects", climport.}
 proc enqueueNDRangeKernel*(command_queue: Pcommand_queue; kernel: Pkernel; 
                            work_dim: uint32; global_work_offset: ptr int; 
                            global_work_size: ptr int; local_work_size: ptr int; 
                            num_events_in_wait_list: uint32; 
                            event_wait_list: ptr Pevent; event: ptr Pevent): TClResult {.
-    stdcall, importc: "clEnqueueNDRangeKernel", dynlib: openclDll.}
+    importc: "clEnqueueNDRangeKernel", climport.}
 proc enqueueTask*(command_queue: Pcommand_queue; kernel: Pkernel; 
                   num_events_in_wait_list: uint32; event_wait_list: ptr Pevent; 
-                  event: ptr Pevent): TClResult {.stdcall, importc: "clEnqueueTask", 
-    dynlib: openclDll.}
+                  event: ptr Pevent): TClResult {.importc: "clEnqueueTask", 
+    climport.}
 
 type 
   TUserCb* = proc (a2: pointer) {.stdcall.}
@@ -1031,15 +1029,15 @@ proc enqueueNativeKernel*(command_queue: Pcommand_queue; user_func: TUserCb;
                           mem_list: ptr Pmem; args_mem_loc: ptr pointer; 
                           num_events_in_wait_list: uint32; 
                           event_wait_list: ptr Pevent; event: ptr Pevent): TClResult {.
-    stdcall, importc: "clEnqueueNativeKernel", dynlib: openclDll.}
+    importc: "clEnqueueNativeKernel", climport.}
 proc enqueueMarkerWithWaitList*(command_queue: Pcommand_queue; 
                                 num_events_in_wait_list: uint32; 
                                 event_wait_list: ptr Pevent; event: ptr Pevent): TClResult {.
-    stdcall, importc: "clEnqueueMarkerWithWaitList", dynlib: openclDll.}
+    importc: "clEnqueueMarkerWithWaitList", climport.}
 proc enqueueBarrierWithWaitList*(command_queue: Pcommand_queue; 
                                  num_events_in_wait_list: uint32; 
                                  event_wait_list: ptr Pevent; event: ptr Pevent): TClResult {.
-    stdcall, importc: "clEnqueueBarrierWithWaitList", dynlib: openclDll.}
+    importc: "clEnqueueBarrierWithWaitList", climport.}
 # Extension function access
 # 
 #  Returns the extension function address for the given function name,
@@ -1049,29 +1047,29 @@ proc enqueueBarrierWithWaitList*(command_queue: Pcommand_queue;
 # 
 
 proc getExtensionFunctionAddressForPlatform*(platform: Pplatform_id; 
-    func_name: cstring): pointer {.stdcall, importc: "clGetExtensionFunctionAddressForPlatform", 
-                                   dynlib: openclDll.}
+    func_name: cstring): pointer {.importc: "clGetExtensionFunctionAddressForPlatform", 
+                                   climport.}
 # Deprecated OpenCL 1.1 APIs
 
 proc createImage2D*(context: Pcontext; flags: Tmem_flags; 
                     image_format: ptr Timage_format; image_width: int; 
                     image_height: int; image_row_pitch: int; host_ptr: pointer; 
-                    errcode_ret: ptr TClResult): Pmem {.stdcall, 
-    importc: "clCreateImage2D", dynlib: openclDll.}
+                    errcode_ret: ptr TClResult): Pmem {.
+    importc: "clCreateImage2D", climport.}
 proc createImage3D*(context: Pcontext; flags: Tmem_flags; 
                     image_format: ptr Timage_format; image_width: int; 
                     image_height: int; image_depth: int; image_row_pitch: int; 
                     image_slice_pitch: int; host_ptr: pointer; 
-                    errcode_ret: ptr TClResult): Pmem {.stdcall, 
-    importc: "clCreateImage3D", dynlib: openclDll.}
+                    errcode_ret: ptr TClResult): Pmem {.
+    importc: "clCreateImage3D", climport.}
 proc enqueueMarker*(command_queue: Pcommand_queue; event: ptr Pevent): TClResult {.
-    stdcall, importc: "clEnqueueMarker", dynlib: openclDll.}
+    importc: "clEnqueueMarker", climport.}
 proc enqueueWaitForEvents*(command_queue: Pcommand_queue; num_events: uint32; 
-                           event_list: ptr Pevent): TClResult {.stdcall, 
-    importc: "clEnqueueWaitForEvents", dynlib: openclDll.}
-proc enqueueBarrier*(command_queue: Pcommand_queue): TClResult {.stdcall, 
-    importc: "clEnqueueBarrier", dynlib: openclDll.}
-proc unloadCompiler*(): TClResult {.stdcall, importc: "clUnloadCompiler", 
-                                dynlib: openclDll.}
-proc getExtensionFunctionAddress*(func_name: cstring): pointer {.stdcall, 
-    importc: "clGetExtensionFunctionAddress", dynlib: openclDll.}
+                           event_list: ptr Pevent): TClResult {.
+    importc: "clEnqueueWaitForEvents", climport.}
+proc enqueueBarrier*(command_queue: Pcommand_queue): TClResult {.
+    importc: "clEnqueueBarrier", climport.}
+proc unloadCompiler*(): TClResult {.importc: "clUnloadCompiler", 
+                                climport.}
+proc getExtensionFunctionAddress*(func_name: cstring): pointer {.
+    importc: "clGetExtensionFunctionAddress", climport.}
