@@ -188,9 +188,8 @@ type
 proc raiseEOpenCL*(x: TClResult) {.noinline.} =
   raise newException(EOpenCL, $x & " " & $int(x))
 
-template check*(a: expr) =
-  let y = a
-  if y != TClResult.Success: raiseEOpenCL(y)
+template check*(a: TClResult) =
+  if a != TClResult.Success: raiseEOpenCL(a)
 
 #  OpenCL Version 
 
