@@ -183,7 +183,7 @@ type
     DEVICE_NOT_FOUND = -1
     SUCCESS = 0
     
-  EOpenCL* = object of EIO ## exception raised by 'check'
+  EOpenCL* = object of IOError ## exception raised by 'check'
 
 proc raiseEOpenCL*(x: TClResult) {.noinline.} =
   raise newException(EOpenCL, $x & " " & $int(x))
