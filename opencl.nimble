@@ -1,11 +1,11 @@
-[Package]
-name: "opencl"
-version: "1.0"
-author: "Andreas Rumpf"
-description: "Low-level wrapper for OpenCL"
-license: "MIT"
+# Package
 
-srcDir: "src"
+version       = "1.0.0"
+author        = "Andreas Rumpf"
+description   = "Low-level wrapper for OpenCL."
+license       = "MIT"
+srcDir = "src"
 
-[Deps]
-requires: "nim > 0.9.2"
+# Dependencies
+
+requires "nim >= 1.6.0"
