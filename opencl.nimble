@@ -1,6 +1,6 @@
 # Package
 
-version       = "1.0.0"
+version       = "1.0.1"
 author        = "Andreas Rumpf"
 description   = "Low-level wrapper for OpenCL."
 license       = "MIT"
